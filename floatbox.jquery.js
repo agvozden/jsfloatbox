@@ -8,7 +8,7 @@
 ;(function($) {
 	(function(pluginName) {
 		var defaults = {
-			msg: '',
+			msg: null,
 			ajax: false,
 			page: false,
 			_fb: 'floatbox',
@@ -16,32 +16,43 @@
 			_fb_frame: 'floatbox_frame',
 			_fb_content: 'floatbox_content',
 			_fb_frame_class: 'rounded-corners',
-			_fb_overlay: 'overlay',
+			_fb_overlay: false, // 'overlay',
 			box: function(div, msg){
+			
+				if (msg===null) msg = div.html();			
 				
-				if (!msg) msg = div.html();
-
-				fHTML = '<div class="'+defaults._fb_overlay+'"></div>'
-					+ '<div id="'+defaults._fb+'">'
+				fHTML = '<div id="'+defaults._fb+'">'
 					+ '<a id="'+defaults._fb_close+'"></a>'
 					+ '<div id="'+defaults._fb_frame+'" class="'+defaults._fb_frame_class+'">'
 					+ '<div id="'+defaults._fb_content+'">'+msg+'</div></div></div>';
 				
-				if (msg) $("body").append(fHTML);
-				else div.append(fHTML);
+				if (defaults._fb_overlay){
+					if ($("."+defaults._fb_overlay).length==0) 
+						fHTML = '<div class="'+defaults._fb_overlay+'"></div>' + fHTML;
+				}
+				
+				if ($("#"+defaults._fb).length==0){
+					if (msg) $("body").append(fHTML);
+					else div.append(fHTML);				
+				} else {
+					$("#"+defaults._fb_content).html(msg);
+					$("#"+defaults._fb).show();
+				}
+				
+				if (defaults._fb_overlay) $("."+defaults._fb_overlay).fadeIn();		
 				
 				$("#"+defaults._fb).on("dblclick", function(){
 					$(this).hide();
-					$("."+defaults._fb_overlay).fadeOut();
+					if (defaults._fb_overlay) $("."+defaults._fb_overlay).fadeOut();
 				});
 				$("#"+defaults._fb_close).on("click", function(){
 					$("#"+defaults._fb).hide();
-					$("."+defaults._fb_overlay).fadeOut();
+					if (defaults._fb_overlay) $("."+defaults._fb_overlay).fadeOut();
 				});	
 				return true;
 			},
 			boxajax: function(div, url){
-				$("#"+defaults._fb_content).load(url, function(){});									
+				$("#"+defaults._fb_content).load(url);									
 			},
 		
 		};
@@ -49,20 +60,20 @@
 			options = $.extend(true, {}, defaults, options);
 						
 			return this.each(function() {
-				var elem = this,
-					$elem = $(elem);
 
-				if (options.page){
-					options.box($elem, true);
-					options.boxajax($elem, url + '?ajax=page&id='+page);
-				}
-				else if (options.ajax){
-					options.box($elem, true);
-					options.boxajax($elem, options.ajax);
-				}
-				else {
-					options.box($elem, options.msg);
-				}		
+				var elem = this, $elem = $(elem);
+
+					if (options.page){
+						options.box($elem, '');
+						options.boxajax($elem, url + '?ajax=page&id='+page);
+					}
+					else if (options.ajax){
+						options.box($elem, '');
+						options.boxajax($elem, options.ajax);
+					}
+					else {
+						options.box($elem, options.msg);
+					}			
 				
 			});
 		};

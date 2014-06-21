@@ -1,0 +1,34 @@
+<htmL>
+<head>
+<link rel="stylesheet" href="floatbox.jquery.css"/>
+<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="floatbox.jquery.js"></script>
+</head>
+
+<body>
+
+<div id="dump">Dump message</div>
+
+<a href="" id="msg">click me</a>
+<a href="README.md" id="load">load me</a>
+
+<script language="javascript">
+$(document).ready(function(){
+
+	$("#dump").floatbox();
+
+	$("#msg").off().on("click" ,function(){
+		$("body").floatbox({msg:'message!'});
+		return false;
+	});
+
+	$("#load").off().on("click" ,function(){
+		$("body").floatbox({ajax:'README.md'});
+		return false;
+	});
+
+});
+</script>
+
+</body>
+</html>

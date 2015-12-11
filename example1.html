@@ -12,7 +12,7 @@
 <a href="" id="msg">click me</a>
 <a href="README.md" id="load">load me</a>
 
-<script language="javascript">
+<script type="text/javascript">
 $(document).ready(function(){
 
 	$("#dump").floatbox();
@@ -28,6 +28,9 @@ $(document).ready(function(){
 	});
 
 });
+var custom_alert = function(message) {
+	$("body").floatbox({msg:message});
+}
 </script>
 
 </body>

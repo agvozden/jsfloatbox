@@ -1,6 +1,6 @@
 #dump {display: none}
 #floatbox {position:absolute;left:25%;right:25%;top:20%;z-index:998}
-#floatbox_close {position:absolute;background:url(img/close.png) 0 0 no-repeat;display:block;width:24px;height:24px;right:-5px;top:-5px;z-index:999}
+#floatbox_close {position:absolute;background:url(images/close.png) 0 0 no-repeat;display:block;width:24px;height:24px;right:-5px;top:-5px;z-index:999}
 #floatbox_close:hover {/*background-position:0 -24px*/}
 #floatbox_close:active {/*background-position:0 -48px*/}
 #floatbox_frame{background:#fff;padding:20px;border:2px solid #ddd}

@@ -5,7 +5,7 @@
  *  $("#dump").floatbox({msg:'test'}); 				// float in dump div
  *	$("body").floatbox({ajax:'http://test.com/'});	// float ajax load
  */
-;(function($) {
+(function($) {
 	(function(pluginName) {
 		var defaults = {
 			msg: null,
@@ -19,7 +19,10 @@
 			_flb_overlay: false, // 'overlay',
 			box: function(div, msg){
 			
-				if (msg===null) msg = div.html();			
+				if (msg===null) {
+					msg = div.html();
+					div.html('');
+				}
 				
 				fHTML = '<div id="'+defaults._flb+'">'
 					+ '<a id="'+defaults._flb_close+'"></a>'
@@ -44,11 +47,20 @@
 				$("#"+defaults._flb).on("dblclick", function(){
 					$(this).hide();
 					if (defaults._flb_overlay) $("."+defaults._flb_overlay).fadeOut();
-				});
+					div.html(msg);
+				});//*/
 				$("#"+defaults._flb_close).on("click", function(){
 					$("#"+defaults._flb).hide();
 					if (defaults._flb_overlay) $("."+defaults._flb_overlay).fadeOut();
+					div.html(msg);
 				});	
+				$( document ).on( 'keydown', function ( e ) {
+				    if ( e.keyCode === 27 ) { // ESC
+				    	$("#"+defaults._flb).hide();
+				    	if (defaults._flb_overlay) $("."+defaults._flb_overlay).fadeOut();
+				    	div.html(msg);
+				    }
+				});				
 				return true;
 			},
 			boxajax: function(div, url){

@@ -1,66 +1,60 @@
 /**
  * floatbox plugin
  * @author agvozden
- *  $("#dump").floatbox(); 							// float dump div
- *  $("#dump").floatbox({msg:'test'}); 				// float in dump div
- *	$("body").floatbox({ajax:'http://test.com/'});	// float ajax load
+ * $("#dump").floatbox(); 							// float dump div
+ * $("#dump").floatbox({msg:'test'}); 				// float in dump div
+ * $("body").floatbox({ajax:'http://test.com/'});	// float ajax load
+ * $("#dump").floatbox({msg:'', parent($("#holder"))}); // float content from parent
  */
-(function($) {
+;(function($) {
 	(function(pluginName) {
 		var defaults = {
 			msg: null,
 			ajax: false,
 			page: false,
+			parent: false,
 			_flb: 'floatbox',
 			_flb_close: 'floatbox_close',
 			_flb_frame: 'floatbox_frame',
 			_flb_content: 'floatbox_content',
 			_flb_frame_class: 'rounded-corners',
 			_flb_overlay: false, // 'overlay',
-			box: function(div, msg){
+			box: function(div, msg, parent){
 			
-				if (msg===null) {
-					msg = div.html();
-					div.html('');
-				}
+				if (msg===null && parent===false) msg = div.html();
 				
 				fHTML = '<div id="'+defaults._flb+'">'
 					+ '<a id="'+defaults._flb_close+'"></a>'
 					+ '<div id="'+defaults._flb_frame+'" class="'+defaults._flb_frame_class+'">'
 					+ '<div id="'+defaults._flb_content+'">'+msg+'</div></div></div>';
-				
+											
 				if (defaults._flb_overlay){
 					if ($("."+defaults._flb_overlay).length==0) 
 						fHTML = '<div class="'+defaults._flb_overlay+'"></div>' + fHTML;
 				}
 				
 				if ($("#"+defaults._flb).length==0){
-					if (msg) $("body").append(fHTML);
+					if (msg || parent) $("body").append(fHTML);
 					else div.append(fHTML);				
 				} else {
 					$("#"+defaults._flb_content).html(msg);
 					$("#"+defaults._flb).show();
 				}
 				
+				if (parent) $("*", parent).appendTo("#"+defaults._flb_content);
+				
 				if (defaults._flb_overlay) $("."+defaults._flb_overlay).fadeIn();		
 				
 				$("#"+defaults._flb).on("dblclick", function(){
-					$(this).hide();
+					$("#"+defaults._flb).hide();
+					if (parent) $("#"+defaults._flb_content+" *").appendTo(parent);
 					if (defaults._flb_overlay) $("."+defaults._flb_overlay).fadeOut();
-					div.html(msg);
-				});//*/
+				});
 				$("#"+defaults._flb_close).on("click", function(){
 					$("#"+defaults._flb).hide();
+					if (parent) $("#"+defaults._flb_content+" *").appendTo(parent);
 					if (defaults._flb_overlay) $("."+defaults._flb_overlay).fadeOut();
-					div.html(msg);
 				});	
-				$( document ).on( 'keydown', function ( e ) {
-				    if ( e.keyCode === 27 ) { // ESC
-				    	$("#"+defaults._flb).hide();
-				    	if (defaults._flb_overlay) $("."+defaults._flb_overlay).fadeOut();
-				    	div.html(msg);
-				    }
-				});				
 				return true;
 			},
 			boxajax: function(div, url){
@@ -84,7 +78,7 @@
 						options.boxajax($elem, options.ajax);
 					}
 					else {
-						options.box($elem, options.msg);
+						options.box($elem, options.msg, options.parent);
 					}			
 				
 			});

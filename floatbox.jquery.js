@@ -13,72 +13,93 @@
 			ajax: false,
 			page: false,
 			parent: false,
+			timeout: false,
 			_flb: 'floatbox',
 			_flb_close: 'floatbox_close',
 			_flb_frame: 'floatbox_frame',
 			_flb_content: 'floatbox_content',
 			_flb_frame_class: 'rounded-corners',
 			_flb_overlay: false, // 'overlay',
-			box: function(div, msg, parent){
+			_timeout: null,
 			
-				if (msg===null && parent===false) msg = div.html();
+			box: function(div, options){
+
+				if (options.msg===null && options.parent===false) options.msg = div.html();
 				
-				fHTML = '<div id="'+defaults._flb+'">'
-					+ '<a id="'+defaults._flb_close+'"></a>'
-					+ '<div id="'+defaults._flb_frame+'" class="'+defaults._flb_frame_class+'">'
-					+ '<div id="'+defaults._flb_content+'">'+msg+'</div></div></div>';
+				fHTML = '<div id="'+options._flb+'">'
+					+ '<a id="'+options._flb_close+'"></a>'
+					+ '<div id="'+options._flb_frame+'" class="'+options._flb_frame_class+'">'
+					+ '<div id="'+options._flb_content+'">'+options.msg+'</div></div></div>';
 											
-				if (defaults._flb_overlay){
-					if ($("."+defaults._flb_overlay).length==0) 
-						fHTML = '<div class="'+defaults._flb_overlay+'"></div>' + fHTML;
+				if (options._flb_overlay){
+					if ($("."+options._flb_overlay).length==0) 
+						fHTML = '<div class="'+options._flb_overlay+'"></div>' + fHTML;
 				}
 				
-				if ($("#"+defaults._flb).length==0){
-					if (msg || parent) $("body").append(fHTML);
-					else div.append(fHTML);				
+				if ($("#"+options._flb).length==0){
+					if (options.msg || options.parent) $("body").append(fHTML);
+					else div.append(fHTML);
 				} else {
-					$("#"+defaults._flb_content).html(msg);
-					$("#"+defaults._flb).show();
+					$("#"+options._flb_content).html(options.msg);
+					$("#"+options._flb).show();
 				}
 				
-				if (parent) $("*", parent).appendTo("#"+defaults._flb_content);
+				if (options.parent) $("*", options.parent).appendTo("#"+options._flb_content);
 				
-				if (defaults._flb_overlay) $("."+defaults._flb_overlay).fadeIn();		
+				if (options._flb_overlay) $("."+options._flb_overlay).fadeIn();
 				
-				$("#"+defaults._flb).on("dblclick", function(){
-					$("#"+defaults._flb).hide();
-					if (parent) $("#"+defaults._flb_content+" *").appendTo(parent);
-					if (defaults._flb_overlay) $("."+defaults._flb_overlay).fadeOut();
+				if (options.timeout){
+					defaults._timeout = setTimeout(function () {
+						options.destroy(options);
+					}, options.timeout);
+				}
+				
+				$("#"+options._flb).on("dblclick", function(){
+					options.destroy(options);
 				});
-				$("#"+defaults._flb_close).on("click", function(){
-					$("#"+defaults._flb).hide();
-					if (parent) $("#"+defaults._flb_content+" *").appendTo(parent);
-					if (defaults._flb_overlay) $("."+defaults._flb_overlay).fadeOut();
+				$("#"+options._flb_close).on("click", function(){
+					options.destroy(options);
 				});	
 				return true;
 			},
-			boxajax: function(div, url){
-				$("#"+defaults._flb_content).load(url);									
+			
+			boxajax: function(div, options){
+				$("#"+options._flb_content).load(options.url);									
 			},
+			
+			destroy: function(options){
+				$("#"+options._flb).fadeOut('slow');
+				if (options.parent) $("#"+options._flb_content+" *").appendTo(options.parent);
+				if (options._flb_overlay) $("."+options._flb_overlay).fadeOut();
+				clearTimeout(defaults._timeout);
+				$("#"+options._flb).remove();
+				return true;
+			}
 		
 		};
 		$.fn[pluginName] = function(options) {
+								
 			options = $.extend(true, {}, defaults, options);
+			
+			if ($("#"+options._flb).length) return false;
 						
 			return this.each(function() {
 
 				var elem = this, $elem = $(elem);
-
+				
 					if (options.page){
-						options.box($elem, '');
-						options.boxajax($elem, url + '?ajax=page&id='+page);
+						options.msg = '';
+						options.box($elem, options);
+						options.url = url + '?ajax=page&id='+page;
+						options.boxajax($elem, options);
 					}
 					else if (options.ajax){
-						options.box($elem, '');
-						options.boxajax($elem, options.ajax);
+						options.msg = '';
+						options.box($elem, options);
+						options.boxajax($elem, options);
 					}
 					else {
-						options.box($elem, options.msg, options.parent);
+						options.box($elem, options);
 					}			
 				
 			});

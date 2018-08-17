@@ -44,7 +44,7 @@
 					$("#"+options._flb).show();
 				}
 				
-				if (options.parent) $("*", options.parent).appendTo("#"+options._flb_content);
+				if (options.parent) $(">*", options.parent).appendTo("#"+options._flb_content);
 				
 				if (options._flb_overlay) $("."+options._flb_overlay).fadeIn();
 				
@@ -69,7 +69,7 @@
 			
 			destroy: function(options){
 				$("#"+options._flb).fadeOut('slow');
-				if (options.parent) $("#"+options._flb_content+" *").appendTo(options.parent);
+				if (options.parent) $("#"+options._flb_content+" >*").appendTo(options.parent);
 				if (options._flb_overlay) $("."+options._flb_overlay).fadeOut();
 				clearTimeout(defaults._timeout);
 				$("#"+options._flb).remove();

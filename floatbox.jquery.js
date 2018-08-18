@@ -20,6 +20,7 @@
 			_flb_content: 'floatbox_content',
 			_flb_frame_class: 'rounded-corners',
 			_flb_overlay: false, // 'overlay',
+			_dblclick: true,
 			_timeout: null,
 			
 			box: function(div, options){
@@ -54,9 +55,11 @@
 					}, options.timeout);
 				}
 				
-				$("#"+options._flb).on("dblclick", function(){
-					options.destroy(options);
-				});
+				if (options._dblclick){
+					$("#"+options._flb).on("dblclick", function(){
+						options.destroy(options);
+					});					
+				}
 				$("#"+options._flb_close).on("click", function(){
 					options.destroy(options);
 				});	
